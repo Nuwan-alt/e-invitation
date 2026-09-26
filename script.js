@@ -518,7 +518,7 @@
 
         var tl = gsap.timeline({ onComplete: finish });
         tl.to(".cover__photo .floral--tr", { x: "6%", y: "-8%", opacity: 0, duration: 1.1, ease: "power3.inOut" }, 0)
-          .to(".cover__floral--bl", { x: "-6%", y: "8%", opacity: 0, duration: 1.1, ease: "power3.inOut" }, 0)
+          .to(".cover__foliage-bottom", { y: "12%", opacity: 0, duration: 1.1, ease: "power3.inOut" }, 0)
           .to(".cover__content", { y: -50, opacity: 0, duration: 0.9, ease: "power3.inOut" }, 0.05)
           .to("#cover", { autoAlpha: 0, duration: 0.5, ease: "power2.out" }, "-=0.35");
       } else {
@@ -548,11 +548,11 @@
 
     /* ---- cover load-in sequence ---- */
     var dearLine = document.getElementById("dearLine");
-    var coverIntroTargets = [".cover__names-wrap", ".cover__date"];
+    var coverIntroTargets = [".cover__tagline"];
     if (dearLine && !dearLine.hidden) coverIntroTargets.unshift("#dearLine");
 
     gsap.set(".cover__photo .floral--tr", { x: 34, y: -26, opacity: 0 });
-    gsap.set(".cover__floral--bl", { x: -34, y: 26, opacity: 0 });
+    gsap.set(".cover__foliage-bottom", { y: 30, opacity: 0 });
     gsap.set(".cover__logo", { scale: 0.9, opacity: 0 });
     gsap.set(coverIntroTargets, { opacity: 0, y: 16 });
     gsap.set(".cover__button", { opacity: 0, y: 10 });
@@ -560,7 +560,7 @@
     var coverTl = gsap.timeline({ delay: 0.15 });
     coverTl
       .to(".cover__photo .floral--tr", { x: 0, y: 0, opacity: 1, duration: 1.6, ease: "power2.out" }, 0)
-      .to(".cover__floral--bl", { x: 0, y: 0, opacity: 0.22, duration: 1.6, ease: "power2.out" }, 0)
+      .to(".cover__foliage-bottom", { y: 0, opacity: 1, duration: 1.6, ease: "power2.out" }, 0)
       .to(".cover__logo", { scale: 1, opacity: 1, duration: 1, ease: "back.out(1.5)" }, 0.35)
       .fromTo(".cover__logo",
         { filter: "drop-shadow(0 0 0px rgba(176,154,108,0))" },
@@ -620,10 +620,14 @@
       }
     });
 
-    /* ---- individual "card" style reveals ---- */
+    /* ---- individual "card" style reveals ----
+       fromTo (not from) everywhere below: a from() tween reads the element's
+       current transform as its end state, and elements with a CSS transform
+       transition (e.g. .btn) can be caught mid-transition — the map button
+       used to end up stuck 24px low, sitting on top of the map */
     gsap.utils.toArray(".reveal-up").forEach(function (el) {
-      gsap.from(el, {
-        opacity: 0, y: 24, duration: 0.8, ease: "power2.out",
+      gsap.fromTo(el, { opacity: 0, y: 24 }, {
+        opacity: 1, y: 0, duration: 0.8, ease: "power2.out",
         scrollTrigger: { trigger: el, start: "top 88%" }
       });
     });
@@ -634,8 +638,8 @@
         return !k.classList.contains("divider");
       });
       if (!kids.length) return;
-      gsap.from(kids, {
-        opacity: 0, y: 24, duration: 0.8, stagger: 0.08, ease: "power2.out",
+      gsap.fromTo(kids, { opacity: 0, y: 24 }, {
+        opacity: 1, y: 0, duration: 0.8, stagger: 0.08, ease: "power2.out",
         scrollTrigger: { trigger: col, start: "top 82%" }
       });
     });

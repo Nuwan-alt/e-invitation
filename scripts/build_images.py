@@ -330,6 +330,61 @@ def build_mandala(size=640):
     out.quantize(64).save(os.path.join(OUT, "mandala-gold.png"), optimize=True)
 
 
+# ---------------------------------------------------------------------------
+# 8. Venue crest (lions, crown, shield, ribbons) cut from the hotel logo,
+#    images/kingsbury.jpg — used as a stencil for the gold-foil crest on
+#    the venue card. Darkness drives opacity: the dark-green ink is solid,
+#    the gold ribbons come out half-tone, and the cream details inside the
+#    shield/lions become cut-outs, so the foil keeps the engraving.
+# ---------------------------------------------------------------------------
+def build_venue_crest():
+    im = Image.open(os.path.join(SRC, "kingsbury.jpg")).convert("L")
+    im = im.crop((6, 60, im.width - 6, 305))  # crest only; skips the JPEG's dark edge pixels
+    low, high = 60, 225  # luminance: <= low fully opaque, >= high transparent
+    alpha = im.point(lambda v: 255 if v <= low else 0 if v >= high else int((high - v) * 255 / (high - low)))
+
+    crest = Image.new("RGBA", im.size, GOLD + (0,))
+    crest.putalpha(alpha)
+    crest = crest.crop(crest.getbbox())
+    crest = crest.resize((crest.width * 2, crest.height * 2), Image.LANCZOS)  # smoother mask edges
+    _save_alpha_pair(crest, "kingsbury-crest", webp_kw={"quality": 90, "method": 6})
+    print("venue crest done", crest.size)
+
+
+# ---------------------------------------------------------------------------
+# 9. Venue photo (hotel entrance with the crest/name sign), images/hotel.jpg.
+#    Note: the source is really an AVIF with a .jpg name; Pillow reads it.
+#    The arch frame crops it in CSS, so the full frame is kept here.
+# ---------------------------------------------------------------------------
+def build_venue_photo():
+    im = Image.open(os.path.join(SRC, "hotel.jpg")).convert("RGB")
+    w, h = im.size
+    max_edge = 1200
+    if max(w, h) > max_edge:
+        scale = max_edge / max(w, h)
+        im = im.resize((int(w * scale), int(h * scale)), Image.LANCZOS)
+    im.save(os.path.join(OUT, "hotel.jpg"), quality=82, optimize=True)
+    im.save(os.path.join(OUT, "hotel.webp"), quality=80, method=6)
+    print("venue photo done", im.size)
+
+
+# ---------------------------------------------------------------------------
+# 10. Cover bottom foliage: the lower strip of images/lower.png (eucalyptus
+#     cluster bottom-left + small sprig bottom-right), shown under the
+#     "Open Invitation" button. The strip ends where the sprig's visible
+#     leaves do (row 575; the rows below are near-white edge pixels), so the
+#     sprig sits on the screen's bottom edge; that also drops the template's
+#     credit line in the last few rows. The left cluster
+#     just bleeds off the bottom a little more.
+# ---------------------------------------------------------------------------
+def build_cover_foliage():
+    im = Image.open(os.path.join(SRC, "lower.png")).convert("RGBA")
+    strip = im.crop((0, 355, im.width, 575))
+    strip = strip.crop(strip.getbbox())
+    _save_alpha_pair(strip, "cover-foliage", webp_kw={"quality": 88, "method": 6})
+    print("cover foliage done", strip.size)
+
+
 if __name__ == "__main__":
     logo = build_logo()
     names = build_names_gold()
@@ -339,5 +394,8 @@ if __name__ == "__main__":
     build_photos()
     build_hero_photos()
     build_og_preview(names)
+    build_venue_crest()
+    build_venue_photo()
+    build_cover_foliage()
     _cleanup_old_card_foliage()
     print("ALL DONE")

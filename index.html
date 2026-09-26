@@ -26,18 +26,17 @@
 <!-- Preload the cover screen's hero photo (LCP-critical, above the fold) -->
 <link rel="preload" as="image" type="image/webp" href="images/optimized/ps3-hero.webp" fetchpriority="high">
 <link rel="preload" as="image" type="image/webp" href="images/optimized/logo-gold-deep.webp">
-<link rel="preload" as="image" type="image/webp" href="images/optimized/names-gold-deep.webp">
 
 <!-- Fonts -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Great+Vibes&amp;family=Cinzel:wght@400;500;600&amp;family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,500&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Great+Vibes&amp;family=Cinzel:wght@400;500;600&amp;family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,500&amp;family=Tenor+Sans&amp;display=swap" rel="stylesheet">
 
 <!-- Third-party CSS -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Swiper/11.2.6/swiper-bundle.min.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/glightbox/3.3.0/css/glightbox.min.css">
 
-<link rel="stylesheet" href="styles.css?v=13">
+<link rel="stylesheet" href="styles.css?v=51">
 </head>
 <body>
 
@@ -59,29 +58,22 @@
     </div>
   </div>
 
-  <div class="floral floral--bl cover__floral cover__floral--bl" aria-hidden="true">
+  <div class="cover__foliage-bottom" aria-hidden="true">
     <picture>
-      <source srcset="images/optimized/floral-bl.webp" type="image/webp">
-      <img src="images/optimized/floral-bl.png" alt="" width="620" height="769">
+      <source srcset="images/optimized/cover-foliage.webp" type="image/webp">
+      <img src="images/optimized/cover-foliage.png" alt="" width="381" height="208">
     </picture>
   </div>
 
   <div class="cover__content">
-    <picture>
+    <picture class="foil foil--logo foil--deep cover__logo">
       <source srcset="images/optimized/logo-gold-deep.webp" type="image/webp">
-      <img class="cover__logo" src="images/optimized/logo-gold-deep.png" alt="Dilshi and Nuwan monogram" width="220" height="195">
+      <img src="images/optimized/logo-gold-deep.png" alt="Dilshi and Nuwan monogram" width="878" height="776">
     </picture>
 
     <p id="dearLine" class="cover__dear" hidden></p>
 
-    <div class="cover__names-wrap">
-      <picture>
-        <source srcset="images/optimized/names-gold-deep.webp" type="image/webp">
-        <img class="cover__names-img names-wipe" src="images/optimized/names-gold-deep.png" alt="Dilshi and Nuwan" width="1603" height="789">
-      </picture>
-    </div>
-
-    <p class="cover__date">25 . 11 . 2026</p>
+    <p class="cover__tagline"><span class="script">We're getting married</span></p>
 
     <button type="button" id="openInvitation" class="btn btn--gold cover__button">
       Open Invitation
@@ -126,7 +118,7 @@
       </p>
 
       <div class="invitation__names">
-        <picture>
+        <picture class="foil foil--names">
           <source srcset="images/optimized/names-gold.webp" type="image/webp">
           <img class="invitation__names-img names-wipe" src="images/optimized/names-gold.png" alt="Dilshi and Nuwan" width="1603" height="789" loading="lazy">
         </picture>
@@ -135,12 +127,12 @@
       <div class="invitation__parents reveal-line">
         <p class="invitation__parent">
           <span class="invitation__parent-label caps">Daughter of</span>
-          <span class="invitation__parent-name">Mr.&nbsp;&amp;&nbsp;Mrs. Wickramarathna</span>
+          <span class="invitation__parent-name">Mr.&nbsp;&amp;&nbsp;Mrs.<br>Wickramarathna</span>
         </p>
         <span class="invitation__parents-rule" aria-hidden="true"></span>
         <p class="invitation__parent">
           <span class="invitation__parent-label caps">Son of</span>
-          <span class="invitation__parent-name">Mr.&nbsp;&amp;&nbsp;Mrs. Mohotti</span>
+          <span class="invitation__parent-name">Mr.&nbsp;&amp;&nbsp;Mrs.<br>Mohotti</span>
         </p>
       </div>
 
@@ -245,8 +237,13 @@
       <h2 class="section-title caps">Event Details</h2>
 
       <p class="details__date">
-        <span class="details__date-day caps">Wednesday</span>
-        <span class="details__date-full">25th November 2026</span>
+        <span class="sr-only">Wednesday, 25th November 2026</span>
+        <span class="details__date-row" aria-hidden="true">
+          <span class="details__date-side caps">November</span>
+          <span class="details__date-num">25</span>
+          <span class="details__date-side caps">Wednesday</span>
+        </span>
+        <span class="details__date-year caps" aria-hidden="true">2026</span>
       </p>
 
       <div class="details__timeline">
@@ -276,8 +273,23 @@
       <div class="divider" aria-hidden="true"><span></span></div>
       <h2 class="section-title caps">Venue</h2>
 
-      <p class="venue__name caps">The Kingsbury, Colombo</p>
-      <p class="venue__hall">The Balmoral Hall</p>
+      <picture class="venue__arch">
+        <source srcset="images/optimized/hotel.webp" type="image/webp">
+        <img src="images/optimized/hotel.jpg" alt="The entrance of The Kingsbury, Colombo, with the hotel's crest and name above the portico" width="1200" height="900" loading="lazy">
+      </picture>
+
+      <div class="venue__card">
+        <div class="venue__seal">
+          <picture class="foil foil--crest venue__crest">
+            <source srcset="images/optimized/kingsbury-crest.webp" type="image/webp">
+            <img src="images/optimized/kingsbury-crest.png" alt="" width="564" height="450" loading="lazy">
+          </picture>
+        </div>
+        <p class="venue__kicker caps">Celebrating at</p>
+        <p class="venue__name script">The Kingsbury</p>
+        <p class="venue__city caps">Colombo</p>
+        <p class="venue__hall">The Balmoral Hall</p>
+      </div>
 
       <a class="btn btn--gold venue__map-btn"
          href="https://maps.google.com/?q=The+Kingsbury+Colombo"
@@ -417,6 +429,6 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Swiper/11.2.6/swiper-bundle.min.js" defer></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/glightbox/3.3.0/js/glightbox.min.js" defer></script>
 
-<script src="script.js?v=17" defer></script>
+<script src="script.js?v=21" defer></script>
 </body>
 </html>
