@@ -36,7 +36,7 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Swiper/11.2.6/swiper-bundle.min.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/glightbox/3.3.0/css/glightbox.min.css">
 
-<link rel="stylesheet" href="styles.css?v=54">
+<link rel="stylesheet" href="styles.css?v=77">
 </head>
 <body>
 
@@ -47,7 +47,7 @@
   <div class="cover__photo">
     <picture>
       <source srcset="images/optimized/ps3-hero.webp" type="image/webp">
-      <img id="coverBgImg" class="cover__photo-img" src="images/optimized/ps3-hero.jpg" alt="" fetchpriority="high" style="object-position:50% 20%">
+      <img id="coverBgImg" class="cover__photo-img" src="images/optimized/ps3-hero.jpg" alt="" fetchpriority="high" style="object-position:30% 70%">
     </picture>
     <div class="cover__photo-fade" aria-hidden="true"></div>
     <div class="floral floral--tr cover__floral" aria-hidden="true">
@@ -252,7 +252,6 @@
           <span class="details__dot" aria-hidden="true"></span>
           <div class="details__body">
             <h3 class="details__title">Event Begins</h3>
-            <p class="details__note">Onwards</p>
           </div>
         </div>
 
@@ -273,39 +272,29 @@
       <div class="divider" aria-hidden="true"><span></span></div>
       <h2 class="section-title caps">Venue</h2>
 
-      <picture class="venue__arch">
-        <source srcset="images/optimized/hotel.webp" type="image/webp">
-        <img src="images/optimized/hotel.jpg" alt="The entrance of The Kingsbury, Colombo, with the hotel's crest and name above the portico" width="1200" height="900" loading="lazy">
-      </picture>
-
-      <div class="venue__card">
-        <div class="venue__seal">
-          <picture class="foil foil--crest venue__crest">
-            <source srcset="images/optimized/kingsbury-crest.webp" type="image/webp">
-            <img src="images/optimized/kingsbury-crest.png" alt="" width="564" height="450" loading="lazy">
-          </picture>
-        </div>
+      <!-- the name first, as the heading -->
+      <div class="venue__intro">
+        <picture class="foil foil--crest venue__crest">
+          <source srcset="images/optimized/kingsbury-crest.webp" type="image/webp">
+          <img src="images/optimized/kingsbury-crest.png" alt="" width="564" height="450" loading="lazy">
+        </picture>
         <p class="venue__kicker caps">Celebrating at</p>
         <p class="venue__name script">The Kingsbury</p>
         <p class="venue__city caps">Colombo</p>
         <p class="venue__hall">The Balmoral Hall</p>
       </div>
 
+      <!-- the hotel entrance, wide, its edges melting into the page -->
+      <picture class="venue__photo">
+        <source srcset="images/optimized/hotel.webp" type="image/webp">
+        <img src="images/optimized/hotel.jpg" alt="The entrance of The Kingsbury, Colombo, with the hotel's crest and name above the portico" width="1200" height="900" loading="lazy">
+      </picture>
+
       <a class="btn btn--gold venue__map-btn"
          href="https://maps.google.com/?q=The+Kingsbury+Colombo"
          target="_blank" rel="noopener">
         View on Google Maps
       </a>
-
-      <div class="venue__map-wrap">
-        <iframe
-          class="venue__map"
-          title="Map to The Kingsbury, Colombo"
-          loading="lazy"
-          referrerpolicy="no-referrer-when-downgrade"
-          src="https://maps.google.com/maps?q=The%20Kingsbury%20Colombo&z=15&output=embed">
-        </iframe>
-      </div>
     </div>
   </section>
 
@@ -337,15 +326,6 @@
             </label>
           </div>
           <p class="rsvp-field__error" id="rsvpAttendingError" hidden></p>
-        </div>
-
-        <div class="rsvp-field rsvp-field--guests is-collapsed" id="rsvpGuestsField">
-          <label class="rsvp-field__label" for="rsvpGuestsInput">Number of Guests</label>
-          <div class="rsvp-stepper">
-            <button type="button" class="rsvp-stepper__btn" id="rsvpGuestsMinus" aria-label="Decrease number of guests">&minus;</button>
-            <input type="text" id="rsvpGuestsInput" name="guests" value="1" inputmode="numeric" readonly aria-live="polite">
-            <button type="button" class="rsvp-stepper__btn" id="rsvpGuestsPlus" aria-label="Increase number of guests">+</button>
-          </div>
         </div>
 
         <div class="rsvp-field">
@@ -406,8 +386,6 @@
     </picture>
     <p class="footer__love"><span class="script">With love,</span></p>
     <p class="footer__names caps">Dilshi &amp; Nuwan</p>
-    <p class="footer__date caps">25 . 11 . 2026</p>
-    <p class="footer__credit">Floral artwork: Vecteezy</p>
   </div>
 
   <!-- same eucalyptus as the cover, mirrored: the invitation opens and closes with it -->
@@ -425,6 +403,6 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Swiper/11.2.6/swiper-bundle.min.js" defer></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/glightbox/3.3.0/js/glightbox.min.js" defer></script>
 
-<script src="script.js?v=21" defer></script>
+<script src="script.js?v=27" defer></script>
 </body>
 </html>

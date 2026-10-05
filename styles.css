@@ -112,6 +112,7 @@ html.lock-scroll body {
   text-align: center;
   font-size: clamp(1.3rem, 1rem + 1.3vw, 1.9rem);
   letter-spacing: 0.18em;
+  text-indent: 0.18em; /* balance the trailing letter-spacing so the word is truly centred */
   margin: 0 0 clamp(28px, 6vw, 44px);
 }
 
@@ -179,7 +180,7 @@ html:not(.js-anim) .divider span { width: 84px; }
   min-height: 48px;
   padding: 12px 28px;
   border: 1px solid var(--green-deep);
-  border-radius: 2px;
+  border-radius: 12px;
   background: transparent;
   color: var(--green-deep);
   font-family: var(--font-caps);
@@ -194,11 +195,10 @@ html:not(.js-anim) .divider span { width: 84px; }
               color 0.35s var(--ease-elegant),
               transform 0.15s ease, box-shadow 0.35s ease;
 }
-.btn:hover,
+/* no colour change on hover or tap; keyboard focus still gets a visible ring */
 .btn:focus-visible {
-  background: var(--green-mist);
-  border-color: var(--green-deep);
-  box-shadow: 0 6px 18px rgba(63, 90, 74, 0.2);
+  outline: 2px solid var(--green-deep);
+  outline-offset: 3px;
 }
 .btn:active { transform: scale(0.97); }
 
@@ -206,12 +206,6 @@ html:not(.js-anim) .divider span { width: 84px; }
   background: var(--green-deep);
   border-color: var(--green-deep);
   color: #fff;
-}
-.btn--gold:hover,
-.btn--gold:focus-visible {
-  background: var(--green-dark);
-  border-color: var(--green-dark);
-  box-shadow: 0 6px 18px rgba(47, 69, 56, 0.38);
 }
 
 .btn--outline { background: transparent; }
@@ -244,6 +238,14 @@ html:not(.js-anim) .divider span { width: 84px; }
   width: 100%;
   height: clamp(240px, 52vh, 460px);
   height: clamp(240px, 52svh, 460px);
+  overflow: hidden;
+  background: var(--color-bg-alt);
+}
+/* stop the photo 1px short of the edge: on fractional-DPR phones its last
+   device-pixel row otherwise peeks out below the fade as a thin dark line */
+.cover__photo picture {
+  display: block;
+  height: calc(100% - 1px);
   overflow: hidden;
 }
 /* shorter screens: trim the photo a little so the monogram, button and the
@@ -350,9 +352,7 @@ html:not(.js-anim) .divider span { width: 84px; }
   line-height: 1.3;
 }
 .cover__tagline::before,
-.cover__tagline::after,
-.footer__date::before,
-.footer__date::after {
+.cover__tagline::after {
   content: "";
   flex: 0 0 auto;
   width: clamp(26px, 8vw, 40px);
@@ -364,8 +364,7 @@ html:not(.js-anim) .divider span { width: 84px; }
     100% calc(50% + 0.5px), 7px calc(50% + 0.5px), 3.5px 100%
   );
 }
-.cover__tagline::after,
-.footer__date::after { transform: scaleX(-1); }
+.cover__tagline::after { transform: scaleX(-1); }
 /* the script's swashes overhang the text box, and the gradient text fill
    only paints inside it — pad so the final "d" isn't clipped */
 .cover__tagline .script { padding: 0 0.2em; }
@@ -699,7 +698,7 @@ html:not(.js-anim) .divider span { width: 84px; }
   inset: 0;
   z-index: 1;
   pointer-events: none;
-  background: linear-gradient(180deg, rgba(47, 69, 56, 0.48) 0%, rgba(31, 45, 36, 0.68) 100%);
+  background: linear-gradient(180deg, rgba(47, 69, 56, 0.58) 0%, rgba(31, 45, 36, 0.76) 100%);
 }
 .countdown .content-col { z-index: 2; }
 
@@ -950,7 +949,7 @@ html:not(.js-anim) .divider span { width: 84px; }
   color: #fff;
   line-height: 1;
 }
-.details__time-num { font-size: clamp(1.55rem, 1.3rem + 1.2vw, 2rem); font-weight: 500; letter-spacing: 0.02em; }
+.details__time-num { font-size: clamp(1.2rem, 1.05rem + 0.8vw, 1.5rem); font-weight: 500; letter-spacing: 0.02em; }
 .details__time-mer {
   margin-top: 6px;
   font-size: 0.72rem;
@@ -978,107 +977,20 @@ html:not(.js-anim) .divider span { width: 84px; }
   line-height: 1.1;
   color: #fff;
 }
-.details__note {
-  margin: 8px 0 0;
-  font-family: var(--font-num);
-  font-size: 1.05rem;
-  font-style: italic;
-  color: rgba(255, 255, 255, 0.85);
-}
 
 /* ==========================================================================
    Venue
    ========================================================================== */
-.venue { --seal: clamp(132px, 38vw, 156px); }
-
-/* hotel photo in an arched window (echoing the building's arches), framed
-   by a hairline with a gap like the card's double border. Cropped so the
-   crest-and-name sign on the tower sits inside the dome of the arch; the
-   foot of the window dissolves into the page rather than ending on a line. */
-.venue__arch {
-  display: block;
-  -webkit-mask-image: linear-gradient(to bottom, #000 60%, transparent 95%);
-  mask-image: linear-gradient(to bottom, #000 60%, transparent 95%);
-  width: min(78%, 300px);
-  margin: 0 auto;
-  padding: 6px;
-  border: 1px solid var(--green-soft);
-  border-radius: 999px 999px 0 0;
-}
-.venue__arch img {
-  width: 100%;
-  height: auto;
-  aspect-ratio: 4 / 5;
-  object-fit: cover;
-  object-position: 40% 50%;
-  border-radius: 999px 999px 0 0;
-  filter: saturate(0.88);
-}
-/* a small gap below the faded photo; the crest seal bridges the two */
-.venue__arch + .venue__card { margin-top: calc(var(--seal) / 2 - 20px); }
-
-/* hotel name as a framed place card: double hairline border with a small
-   diamond on the top and bottom edge, script name with a slow light sheen */
-.venue__card {
-  position: relative;
-  max-width: 400px;
-  margin: 0 auto clamp(24px, 5vw, 32px);
-  padding: calc(var(--seal) / 2 + 12px) clamp(18px, 5vw, 32px) clamp(22px, 5vw, 30px);
-  background: var(--green-tint);
-  border: 1px solid var(--green-soft);
-}
-.venue__card::before {  /* inner hairline */
-  content: "";
-  position: absolute;
-  inset: 6px;
-  border: 1px solid var(--green-soft);
-  pointer-events: none;
-}
-.venue__card::after {  /* diamonds on top and bottom edges */
-  content: "";
-  position: absolute;
-  left: 50%;
-  top: -5px;
-  bottom: -5px;
-  width: 9px;
-  transform: translateX(-50%);
-  background: var(--green-sage);
-  /* two diamonds joined by a zero-width seam down the middle */
-  clip-path: polygon(
-    50% 0, 100% 4.5px, 50% 9px,
-    50% calc(100% - 9px), 100% calc(100% - 4.5px), 50% 100%, 0 calc(100% - 4.5px), 50% calc(100% - 9px),
-    50% 9px, 0 4.5px
-  );
-  pointer-events: none;
-}
-/* round seal holding the foil crest, set across the card's top edge
-   (it hides the top diamond and the hairlines where they pass under it) */
-.venue__seal {
-  position: absolute;
-  top: 0;
-  left: 50%;
-  z-index: 1;
-  width: var(--seal);
-  height: var(--seal);
-  transform: translate(-50%, -50%);
-  display: grid;
-  place-items: center;
-  border-radius: 50%;
-  background: var(--green-tint);
-  border: 1px solid var(--green-soft);
-  box-shadow: 0 8px 22px rgba(43, 43, 43, 0.08);
-}
-.venue__seal::before {  /* inner ring, matching the card's double hairline */
-  content: "";
-  position: absolute;
-  inset: 5px;
-  border: 1px solid var(--green-soft);
-  border-radius: 50%;
-  pointer-events: none;
-}
+/* layout: the hotel's name as the heading (crest, kicker, name, city, hall),
+   then a "postcard" — the arched hotel photo with the map as a round
+   postmark stamped over its corner — then the Google Maps button */
+.venue { padding-bottom: clamp(14px, 3vw, 22px); }  /* the button ends the section; no need for the full section gap */
+.venue + .rsvp { padding-top: clamp(14px, 3vw, 22px); }
+.rsvp { padding-bottom: clamp(32px, 7vw, 52px); }  /* the footer's domed top gives enough separation */
+.venue__intro { margin-bottom: clamp(28px, 6vw, 40px); }
 .venue__crest {
-  width: 70%;
-  margin-top: -4%; /* optical centring: the ribbons make the crest bottom-heavy */
+  width: clamp(104px, 30vw, 132px);
+  margin: 0 auto clamp(12px, 3vw, 16px);
 }
 .venue__crest img {
   width: 100%;
@@ -1088,6 +1000,7 @@ html:not(.js-anim) .divider span { width: 84px; }
   margin: 0;
   font-size: 0.66rem;
   letter-spacing: 0.3em;
+  text-indent: 0.3em; /* balance trailing letter-spacing */
   color: var(--green-sage);
 }
 /* the hotel's name in serif capitals, echoing its own wordmark and sign */
@@ -1097,6 +1010,7 @@ html:not(.js-anim) .divider span { width: 84px; }
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.12em;
+  text-indent: 0.12em; /* balance trailing letter-spacing */
   font-size: clamp(1.4rem, 1.1rem + 1.3vw, 1.85rem);
   line-height: 1.2;
   /* shared green gradient plus a pale band that sweeps across now and then */
@@ -1134,22 +1048,29 @@ html:not(.js-anim) .divider span { width: 84px; }
   color: var(--green-deep);
   font-style: italic;
 }
-.venue__map-btn { margin-bottom: clamp(24px, 5vw, 34px); }
-.venue__map-wrap {
-  position: relative;
-  width: 100%;
-  padding-top: 62%;
-  border-radius: 6px;
-  overflow: hidden;
-  border: 1px solid var(--green-soft);
+/* the hotel entrance as a wide photo whose edges fade softly into the page
+   (no frame); it breaks out of the text column up to 760px wide. */
+.venue__photo {
+  display: block;
+  width: min(100vw, 760px);
+  margin: 0 0 clamp(20px, 5vw, 32px) calc(50% - min(50vw, 380px));
+  /* two linear fades intersected: soft on all four sides, longest at the foot */
+  -webkit-mask-image:
+    linear-gradient(to right, transparent, #000 16%, #000 84%, transparent),
+    linear-gradient(to bottom, transparent, #000 12%, #000 72%, transparent);
+  -webkit-mask-composite: source-in;
+  mask-image:
+    linear-gradient(to right, transparent, #000 16%, #000 84%, transparent),
+    linear-gradient(to bottom, transparent, #000 12%, #000 72%, transparent);
+  mask-composite: intersect;
 }
-.venue__map {
-  position: absolute;
-  inset: 0;
+.venue__photo img {
   width: 100%;
-  height: 100%;
-  border: 0;
+  height: auto;
+  filter: saturate(0.88);
 }
+
+.venue__map-btn { margin: 0; }
 
 /* ==========================================================================
    RSVP
@@ -1277,56 +1198,6 @@ html:not(.js-anim) .divider span { width: 84px; }
   box-shadow: 0 0 0 3px rgba(126, 154, 134, 0.4);
 }
 
-/* ---- guest stepper ---- */
-.rsvp-stepper {
-  display: flex;
-  align-items: center;
-  width: fit-content;
-  border: 1px solid var(--green-soft);
-  border-radius: 6px;
-  overflow: hidden;
-  background: var(--green-mist);
-}
-.rsvp-stepper__btn {
-  width: 48px;
-  height: 48px;
-  border: 0;
-  background: transparent;
-  color: var(--green-deep);
-  font-family: var(--font-num);
-  font-size: 1.3rem;
-  line-height: 1;
-  cursor: pointer;
-  transition: background-color 0.2s ease;
-}
-.rsvp-stepper__btn:hover:not(:disabled) { background: rgba(63, 90, 74, 0.14); }
-.rsvp-stepper__btn:disabled { opacity: 0.35; cursor: not-allowed; }
-.rsvp-stepper input {
-  width: 56px;
-  height: 48px;
-  border: 0;
-  border-left: 1px solid var(--green-soft);
-  border-right: 1px solid var(--green-soft);
-  text-align: center;
-  font-size: 16px;
-  font-family: var(--font-input);
-  color: var(--color-charcoal);
-  background: transparent;
-}
-
-.rsvp-field--guests {
-  overflow: hidden;
-  max-height: 140px;
-  opacity: 1;
-  transition: max-height 0.4s var(--ease-elegant), opacity 0.3s ease, margin-top 0.4s var(--ease-elegant);
-}
-.rsvp-field--guests.is-collapsed {
-  max-height: 0;
-  opacity: 0;
-  margin-top: 0 !important;
-  pointer-events: none;
-}
-
 /* ---- honeypot (visually hidden, still in the tab/DOM flow for bots that
    fill every field programmatically without rendering CSS) ---- */
 .rsvp-honeypot {
@@ -1407,7 +1278,7 @@ html:not(.js-anim) .divider span { width: 84px; }
 .footer {
   position: relative;
   overflow: hidden;
-  padding-top: clamp(56px, 12vw, 80px);
+  padding-top: clamp(40px, 9vw, 60px);
   text-align: center;
   background: var(--color-bg-alt);
   border-top: 1px solid var(--green-soft);
@@ -1419,8 +1290,8 @@ html:not(.js-anim) .divider span { width: 84px; }
   padding: 0 var(--side-pad);
 }
 .footer__logo {
-  width: clamp(88px, 26vw, 116px);
-  margin: 0 auto clamp(18px, 4vw, 24px);
+  width: clamp(96px, 28vw, 128px);
+  margin: 0 auto clamp(12px, 3vw, 18px);
 }
 .footer__logo img { width: 100%; height: auto; }
 .footer__love {
@@ -1430,31 +1301,15 @@ html:not(.js-anim) .divider span { width: 84px; }
 }
 .footer__love .script { padding: 0 0.2em; } /* keep the swash of the final letter inside the gradient fill */
 .footer__names {
-  margin: 4px 0 12px;
+  margin: 4px 0 30px;
   font-size: clamp(1.05rem, 0.9rem + 0.8vw, 1.3rem);
   letter-spacing: 0.22em;
   margin-right: -0.22em; /* offset trailing letter-spacing so it stays centred */
   color: var(--green-deep);
 }
-.footer__date {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 12px;
-  margin: 0 0 clamp(22px, 5vw, 30px);
-  font-size: 0.78rem;
-  letter-spacing: 0.3em;
-  color: var(--color-charcoal);
-}
-.footer__credit {
-  font-size: 0.68rem;
-  letter-spacing: 0.04em;
-  color: var(--green-sage);
-  margin: 0;
-}
 .footer__foliage {
-  width: min(100%, 460px);
-  margin: clamp(-64px, -14vw, -40px) 0 0 auto;  /* tuck up beside the credit line (the cluster is on the right, clear of the text) */
+  width: min(80%, 340px);
+  margin: clamp(-80px, -18vw, -56px) 0 0 auto;  /* tuck up beside the names (the cluster is on the right, clear of the text) */
   transform: scaleX(-1);                        /* mirrored: big cluster on the right */
   pointer-events: none;
 }

@@ -7,11 +7,10 @@
  */
 
 var SHEET_NAME = "RSVP";
-var HEADERS = ["Timestamp", "Name", "Attending", "Guests", "Phone", "Message", "Guest Link"];
+var HEADERS = ["Timestamp", "Name", "Attending", "Phone", "Message", "Guest Link"];
 var MAX_LENGTHS = {
   name: 120,
   attending: 20,
-  guests: 10,
   phone: 40,
   message: 400,
   guestParam: 120
@@ -43,7 +42,6 @@ function doPost(e) {
       new Date(),
       name,
       trimAndLimit_(params.attending, MAX_LENGTHS.attending),
-      trimAndLimit_(params.guests, MAX_LENGTHS.guests),
       trimAndLimit_(params.phone, MAX_LENGTHS.phone),
       trimAndLimit_(params.message, MAX_LENGTHS.message),
       trimAndLimit_(params.guestParam, MAX_LENGTHS.guestParam)

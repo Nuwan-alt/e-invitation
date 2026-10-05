@@ -23,9 +23,10 @@
    * `position` is a CSS object-position value so faces aren't cropped.
    * ------------------------------------------------------------------ */
   var PHOTOS = [
-    { file: "ps1", alt: "Dilshi and Nuwan holding hands on the beach", position: "50% 22%" },
-    { file: "ps2", alt: "Dilshi and Nuwan sitting together in a forest clearing", position: "50% 28%" },
-    { file: "ps3", alt: "Dilshi and Nuwan looking out at the ocean waves", position: "50% 30%" }
+    { file: "ps6", alt: "Nuwan kissing Dilshi's forehead, in black and white", position: "50% 35%" },
+    { file: "ps4", alt: "Dilshi and Nuwan spinning hand in hand in a meadow", position: "45% 80%" },
+    { file: "ps2", alt: "Nuwan dipping Dilshi in the surf by the rocks", position: "65% 58%" },
+    { file: "ps5", alt: "Nuwan holding Dilshi from behind on the beach", position: "50% 55%" }
   ];
 
   /* ==================================================================
@@ -247,10 +248,6 @@
     var attendNo = document.getElementById("rsvpAttendNo");
     var attendCards = form.querySelectorAll(".rsvp-attend__card");
     var attendingError = document.getElementById("rsvpAttendingError");
-    var guestsField = document.getElementById("rsvpGuestsField");
-    var guestsInput = document.getElementById("rsvpGuestsInput");
-    var guestsMinus = document.getElementById("rsvpGuestsMinus");
-    var guestsPlus = document.getElementById("rsvpGuestsPlus");
     var phoneInput = document.getElementById("rsvpPhone");
     var messageInput = document.getElementById("rsvpMessage");
     var messageCount = document.getElementById("rsvpMessageCount");
@@ -268,8 +265,6 @@
     var alreadyEl = document.getElementById("rsvpAlready");
     var updateBtn = document.getElementById("rsvpUpdateBtn");
 
-    var guestCount = 1;
-
     /* ---- deadline line ---- */
     if (deadlineEl) {
       if (RSVP_DEADLINE) {
@@ -284,31 +279,12 @@
     var guestParam = getGuestName();
     if (guestParam && nameInput) nameInput.value = guestParam;
 
-    /* ---- guest stepper ---- */
-    function setGuests(n) {
-      guestCount = Math.min(10, Math.max(1, n));
-      guestsInput.value = String(guestCount);
-      guestsMinus.disabled = guestCount <= 1;
-      guestsPlus.disabled = guestCount >= 10;
-    }
-    setGuests(1);
-    if (guestsMinus) guestsMinus.addEventListener("click", function () { setGuests(guestCount - 1); });
-    if (guestsPlus) guestsPlus.addEventListener("click", function () { setGuests(guestCount + 1); });
-
     /* ---- attending choice cards ---- */
     function updateAttendingUI() {
-      var checked = form.querySelector('input[name="attending"]:checked');
       attendCards.forEach(function (card) {
         var input = card.querySelector("input");
         card.classList.toggle("is-selected", !!(input && input.checked));
       });
-      var attending = checked ? checked.value : "";
-      if (attending === "yes") {
-        guestsField.classList.remove("is-collapsed");
-      } else {
-        guestsField.classList.add("is-collapsed");
-        if (attending === "no") setGuests(1);
-      }
     }
     [attendYes, attendNo].forEach(function (radio) {
       if (!radio) return;
@@ -430,7 +406,6 @@
       var name = nameInput.value.trim();
       var attendingInput = form.querySelector('input[name="attending"]:checked');
       var attending = attendingInput ? attendingInput.value : "";
-      var guests = attending === "yes" ? String(guestCount) : "0";
       var phone = phoneInput.value.trim();
       var message = messageInput.value.trim();
 
@@ -443,7 +418,6 @@
       body.set("timestamp", new Date().toISOString());
       body.set("name", name);
       body.set("attending", attending === "yes" ? "Yes" : "No");
-      body.set("guests", guests);
       body.set("phone", phone);
       body.set("message", message);
       body.set("guestParam", guestParam || "");

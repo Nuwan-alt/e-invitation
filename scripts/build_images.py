@@ -216,7 +216,7 @@ def build_floral():
 #    (used by the "Our Moments" gallery — framing/crop stays as before)
 # ---------------------------------------------------------------------------
 def build_photos():
-    files = ["ps1.jpg", "ps2.jpg", "ps3.jpg"]
+    files = [f"ps{i}.jpg" for i in (2, 4, 5, 6)]
     for f in files:
         im = Image.open(os.path.join(SRC, f)).convert("RGB")
         im = ImageOps.exif_transpose(im)
@@ -251,14 +251,14 @@ def build_hero_photos():
 
 
 # ---------------------------------------------------------------------------
-# 6. Social share preview (1200x630) — ps3 fading into white, gold names, date
+# 6. Social share preview (1200x630) — ps1 fading into white, gold names, date
 # ---------------------------------------------------------------------------
 def build_og_preview(names_gold):
     W, H = 1200, 630
     canvas = Image.new("RGB", (W, H), (255, 255, 255))
 
-    photo = Image.open(os.path.join(SRC, "ps3.jpg")).convert("RGB")
-    photo_cover = ImageOps.fit(photo, (W, H), method=Image.LANCZOS, centering=(0.5, 0.22))
+    photo = ImageOps.exif_transpose(Image.open(os.path.join(SRC, "ps1.jpg"))).convert("RGB")
+    photo_cover = ImageOps.fit(photo, (W, H), method=Image.LANCZOS, centering=(0.5, 0.13))
 
     # vertical alpha mask: solid photo across the top third, fading to pure
     # white by about half way down, leaving clean room for the names/date
