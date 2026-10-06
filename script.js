@@ -13,8 +13,8 @@
    * RSVP config — paste the Google Apps Script web app URL here once
    * it's deployed (see README.md for the step-by-step setup).
    * ------------------------------------------------------------------ */
-  var RSVP_ENDPOINT = "PASTE_GOOGLE_APPS_SCRIPT_URL_HERE";
-  var RSVP_DEADLINE = ""; // e.g. "10th November 2026" — leave empty to hide the line
+  var RSVP_ENDPOINT = "https://script.google.com/macros/s/AKfycbx67YqxfWGxu1gLwifAo6fSjbVK9gnnX1JDSCvhHv8SF4EyGSXlX4mXrbbLOPIPWHGF/exec";
+  var RSVP_DEADLINE = "1st November 2026"; // e.g. "10th November 2026" — leave empty to hide the line
   var RSVP_STORAGE_KEY = "dn-wedding-rsvp-2026";
 
   /* ------------------------------------------------------------------
@@ -66,8 +66,8 @@
     if (!wrapper) return;
 
     // Swiper's loop mode needs more slides than we have photos to swipe
-    // smoothly, so with Swiper present each photo is added twice. Only the
-    // first copy is part of the lightbox gallery; copies open their original.
+    // smoothly, so with Swiper present each photo is added twice. Every copy
+    // opens the lightbox at its photo via data-photo (see initLightbox).
     var copies = typeof Swiper === "undefined" ? 1 : 2;
     var slides = [];
     for (var c = 0; c < copies; c++) {
@@ -79,7 +79,7 @@
       return (
         '<div class="swiper-slide gallery__slide">' +
           '<a href="images/optimized/' + p.file + '.jpg" data-photo="' + s.i + '"' +
-             (s.copy ? ' aria-hidden="true" tabindex="-1"' : ' class="glightbox" data-gallery="preshoot"') + '>' +
+             (s.copy ? ' aria-hidden="true" tabindex="-1"' : '') + '>' +
             '<picture>' +
               '<source srcset="images/optimized/' + p.file + '.webp" type="image/webp">' +
               '<img src="images/optimized/' + p.file + '.jpg" alt="' + p.alt.replace(/"/g, "&quot;") + '" ' +
@@ -153,20 +153,68 @@
 
   function initLightbox() {
     if (typeof GLightbox === "undefined") return; // plain links still open the photos
+    // Built from PHOTOS rather than a DOM selector: Swiper's loop mode
+    // reorders the slides, which would scramble the lightbox order.
     var lightbox = GLightbox({
-      selector: ".glightbox",
+      elements: PHOTOS.map(function (p) {
+        return { href: "images/optimized/" + p.file + ".jpg", type: "image", alt: p.alt };
+      }),
       touchNavigation: true,
       loop: true,
       zoomable: true
     });
 
-    // the gallery's duplicate slides open their original photo
-    document.querySelectorAll(".gallery__slide a:not(.glightbox)").forEach(function (a) {
-      a.addEventListener("click", function (e) {
+    var wrapper = document.getElementById("gallerySwiperWrapper");
+    if (wrapper) {
+      wrapper.addEventListener("click", function (e) {
+        var a = e.target.closest("a[data-photo]");
+        if (!a) return;
         e.preventDefault();
         lightbox.openAt(+a.getAttribute("data-photo"));
       });
+    }
+
+    // GLightbox 3.3.0 ignores `loop` for touch swipes: swiping past the last
+    // (or before the first) photo just bounces back. Its swipe handlers are
+    // rebuilt on every open, so take them over then and turn those two
+    // bounces into normal next/prev moves; every other swipe is untouched.
+    lightbox.on("open", function () {
+      setTimeout(function () {
+        var touch = lightbox.events && lightbox.events.touch;
+        if (!touch || !touch.swipe) return;
+        var multiTouch = false;
+        touch.on("touchStart", function (evt) { if (evt.touches.length === 1) multiTouch = false; });
+        touch.on("multipointStart", function () { multiTouch = true; });
+
+        var original = touch.swipe.handlers.slice();
+        touch.swipe.handlers = [function (evt) {
+          var last = lightbox.elements.length - 1;
+          var slide = lightbox.activeSlide;
+          var img = slide && slide.querySelector("img");
+          var zoomed = (slide && slide.classList.contains("zoomed")) || (img && img.scaleX > 1);
+          if (last > 0 && !multiTouch && !zoomed) {
+            if (evt.direction === "Left" && lightbox.index === last) return lightbox.nextSlide();
+            if (evt.direction === "Right" && lightbox.index === 0) return lightbox.prevSlide();
+          }
+          for (var i = 0; i < original.length; i++) original[i].apply(this, arguments);
+        }];
+      }, 0);
     });
+
+    // GLightbox picks the slide animation by comparing indexes, so wrapping
+    // last -> first would slide backwards. Flip the effect for wrap moves.
+    var effects = lightbox.settings.cssEfects;
+    var slideFx = effects.slide, slideBackFx = effects.slideBack;
+    function restoreEffects() { effects.slide = slideFx; effects.slideBack = slideBackFx; }
+    var goToSlide = lightbox.goToSlide;
+    lightbox.goToSlide = function (index) {
+      var n = this.elements.length;
+      if (n > 1 && index >= n) effects.slideBack = slideFx;
+      else if (n > 1 && index < 0) effects.slide = slideBackFx;
+      return goToSlide.apply(this, arguments);
+    };
+    lightbox.on("slide_changed", restoreEffects);
+    lightbox.on("close", restoreEffects);
   }
 
   /* ==================================================================
