@@ -273,16 +273,27 @@ html:not(.js-anim) .divider span { width: 84px; }
   to   { transform: scale(1.14) translateY(-1.5%); }
 }
 
-/* short, soft fade across only the bottom ~18% of the photo into the
-   content area's ground colour — the rest of the photo stays untouched */
+/* soft fade across the bottom ~38% of the photo into the content area's
+   ground colour. The stops follow an ease-in-out curve rather than a
+   straight line, so there's no visible edge where it starts or ends. */
 .cover__photo-fade {
   position: absolute;
   left: 0;
   right: 0;
   bottom: 0;
-  height: 18%;
+  height: 38%;
   pointer-events: none;
-  background: linear-gradient(to bottom, rgba(250, 249, 246, 0) 0%, var(--color-bg-alt) 100%);
+  background: linear-gradient(to bottom,
+    rgba(250, 249, 246, 0) 0%,
+    rgba(250, 249, 246, 0.03) 12%,
+    rgba(250, 249, 246, 0.1) 24%,
+    rgba(250, 249, 246, 0.22) 35%,
+    rgba(250, 249, 246, 0.38) 46%,
+    rgba(250, 249, 246, 0.56) 57%,
+    rgba(250, 249, 246, 0.73) 67%,
+    rgba(250, 249, 246, 0.86) 77%,
+    rgba(250, 249, 246, 0.95) 87%,
+    var(--color-bg-alt) 100%);
 }
 
 .cover__photo .floral--tr {  /* flush with the top edge: the artwork bleeds off it */
@@ -325,7 +336,7 @@ html:not(.js-anim) .divider span { width: 84px; }
 /* the monogram is the cover's centrepiece: gold foil, pressed in (see .foil) */
 .cover__logo {
   width: clamp(120px, min(38vw, 24svh), 190px);
-  margin-bottom: clamp(10px, 2.2svh, 18px);
+  margin-bottom: clamp(4px, 1svh, 10px);
 }
 .cover__logo img {
   width: 100%;
@@ -347,7 +358,9 @@ html:not(.js-anim) .divider span { width: 84px; }
   align-items: center;
   justify-content: center;
   gap: 12px;
-  margin: clamp(4px, 1.2svh, 10px) 0 clamp(14px, 3svh, 24px);
+  /* sits close under the monogram, with the extra room below it, so the
+     line stays clear of the foliage strip while the button doesn't move */
+  margin: 0 0 clamp(28px, 5.5svh, 44px);
   font-size: clamp(1.55rem, 1.3rem + 1.2vw, 1.95rem);
   line-height: 1.3;
 }
