@@ -5,12 +5,11 @@ Run with: python scripts/build_images.py
 Requires: Pillow (pip install pillow)
 """
 import os
-from PIL import Image, ImageDraw, ImageFont, ImageFilter, ImageOps, ImageChops
+from PIL import Image, ImageDraw, ImageFilter, ImageOps, ImageChops
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SRC = os.path.join(ROOT, "images")
 OUT = os.path.join(ROOT, "images", "optimized")
-FONTS = os.path.join(ROOT, "scripts", "fonts")
 os.makedirs(OUT, exist_ok=True)
 
 GOLD = (176, 154, 108)  # #B09A6C
@@ -250,55 +249,6 @@ def build_hero_photos():
         print(src_name, "-> hero", im.size)
 
 
-# ---------------------------------------------------------------------------
-# 6. Social share preview (1200x630) — ps1 fading into white, gold names, date
-# ---------------------------------------------------------------------------
-def build_og_preview(names_gold):
-    W, H = 1200, 630
-    canvas = Image.new("RGB", (W, H), (255, 255, 255))
-
-    photo = ImageOps.exif_transpose(Image.open(os.path.join(SRC, "ps1.jpg"))).convert("RGB")
-    photo_cover = ImageOps.fit(photo, (W, H), method=Image.LANCZOS, centering=(0.5, 0.13))
-
-    # vertical alpha mask: solid photo across the top third, fading to pure
-    # white by about half way down, leaving clean room for the names/date
-    gradient = Image.new("L", (1, H), 0)
-    for y in range(H):
-        t = y / H
-        if t < 0.26:
-            a = 255
-        elif t < 0.58:
-            a = int(255 * (1 - (t - 0.26) / (0.58 - 0.26)))
-        else:
-            a = 0
-        gradient.putpixel((0, y), a)
-    gradient = gradient.resize((W, H))
-
-    canvas = Image.composite(photo_cover, canvas, gradient)
-
-    # gold names artwork, centred in the lower (white) portion
-    names_w = 400
-    scale = names_w / names_gold.width
-    names_resized = names_gold.resize((names_w, int(names_gold.height * scale)), Image.LANCZOS)
-    names_y = 335
-    canvas.paste(names_resized, ((W - names_w) // 2, names_y), names_resized)
-
-    draw = ImageDraw.Draw(canvas)
-    date_font = ImageFont.truetype(os.path.join(FONTS, "Cinzel-SemiBold.ttf"), 26)
-    sub_font = ImageFont.truetype(os.path.join(FONTS, "CormorantGaramond-Medium.ttf"), 24)
-
-    def centered_text(y, text, font, fill):
-        bbox = draw.textbbox((0, 0), text, font=font)
-        tw = bbox[2] - bbox[0]
-        draw.text(((W - tw) / 2, y), text, font=font, fill=fill)
-
-    centered_text(names_y + names_resized.height + 10, "2 5   .   1 1   .   2 0 2 6", date_font, (43, 43, 43))
-    centered_text(names_y + names_resized.height + 52, "THE KINGSBURY, COLOMBO", sub_font, (100, 100, 100))
-
-    canvas.save(os.path.join(OUT, "og-preview.jpg"), quality=88, optimize=True)
-    print("og preview done", canvas.size)
-
-
 def _cleanup_old_card_foliage():
     """Remove assets from the previous card-based foliage decoration —
     the site no longer embeds the reference invitation card image."""
@@ -387,13 +337,12 @@ def build_cover_foliage():
 
 if __name__ == "__main__":
     logo = build_logo()
-    names = build_names_gold()
+    build_names_gold()
     build_cover_gold_variants()
     build_floral()
     build_mandala()
     build_photos()
     build_hero_photos()
-    build_og_preview(names)
     build_venue_crest()
     build_venue_photo()
     build_cover_foliage()

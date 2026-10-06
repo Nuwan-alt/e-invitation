@@ -494,17 +494,19 @@ html:not(.js-anim) .divider span { width: 84px; }
     position: absolute;
     inset: 0;
     background:
-      linear-gradient(105deg, transparent 42%, rgba(255, 250, 235, 0.9) 50%, transparent 58%) 250% 0 / 250% 100% no-repeat,
+      linear-gradient(105deg, transparent 34%, rgba(255, 250, 235, 0.3) 42%, rgba(255, 250, 235, 0.75) 50%,
+        rgba(255, 250, 235, 0.3) 58%, transparent 66%) 250% 0 / 250% 100% no-repeat,
       var(--foil);
     -webkit-mask: var(--foil-mask) center / 100% 100% no-repeat;
     mask: var(--foil-mask) center / 100% 100% no-repeat;
-    animation: foil-sheen 5s ease-in-out 1.5s infinite;
+    animation: foil-sheen 10s linear 1.5s infinite;
     pointer-events: none;
   }
 }
+/* an unhurried, even glide (about 6s across), then a few seconds' rest */
 @keyframes foil-sheen {
   0%        { background-position: 250% 0, 0 0; }
-  90%, 100% { background-position: -150% 0, 0 0; }
+  60%, 100% { background-position: -150% 0, 0 0; }
 }
 
 /* ---- parents: side by side under the names ---- */
@@ -805,19 +807,73 @@ html:not(.js-anim) .divider span { width: 84px; }
   opacity: 1;
 }
 
-/* GLightbox controls (green-tinted circles, default library CSS uses
-   plain black) — selectors verified against glightbox 3.3.0's own CSS */
-.glightbox-clean .gclose,
-.glightbox-clean .gnext,
-.glightbox-clean .gprev {
-  background-color: rgba(47, 69, 56, 0.55) !important;
+/* ---------- full-screen photo viewer (built in initLightbox) ---------- */
+html.lightbox-open { overflow: hidden; }
+
+.lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 1100;
+  background: #161E19;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.25s ease, visibility 0s linear 0.25s;
 }
-.glightbox-clean .gclose:hover,
-.glightbox-clean .gnext:hover,
-.glightbox-clean .gprev:hover {
-  background-color: rgba(47, 69, 56, 0.85) !important;
+.lightbox.is-open {
+  opacity: 1;
+  visibility: visible;
+  transition: opacity 0.25s ease;
 }
-.gbtn.focused { outline-color: var(--green-sage); }
+.lightbox__swiper {
+  width: 100%;
+  height: 100%;
+}
+.lightbox .swiper-zoom-container > img {
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+}
+.lightbox__count {
+  position: absolute;
+  top: calc(18px + env(safe-area-inset-top));
+  left: 20px;
+  z-index: 2;
+  margin: 0;
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.85);
+  pointer-events: none;
+}
+.lightbox__btn {
+  position: absolute;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(47, 69, 56, 0.55);
+  color: #fff;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+.lightbox__btn:hover { background: rgba(47, 69, 56, 0.85); }
+.lightbox__close {
+  top: calc(8px + env(safe-area-inset-top));
+  right: 12px;
+}
+.lightbox__nav {
+  top: 50%;
+  transform: translateY(-50%);
+}
+.lightbox__nav--prev { left: 16px; }
+.lightbox__nav--next { right: 16px; }
+/* phones swipe instead */
+@media (hover: none) {
+  .lightbox__nav { display: none; }
+}
 
 /* if the Swiper library fails to load, keep every slide reachable via
    plain horizontal scrolling instead of letting the library's own
@@ -1019,11 +1075,12 @@ html:not(.js-anim) .divider span { width: 84px; }
     linear-gradient(120deg, var(--green-dark), var(--green-sage) 45%, var(--green-dark) 90%);
   -webkit-background-clip: text;
   background-clip: text;
-  animation: venue-sheen 7s ease-in-out 1s infinite;
+  animation: venue-sheen 7.5s linear 1s infinite;
 }
+/* a 3.5s glide at an even pace, then 4s rest before the next one */
 @keyframes venue-sheen {
-  0%       { background-position: 200% 0, 0 0; }
-  35%, 100% { background-position: -200% 0, 0 0; }
+  0%        { background-position: 200% 0, 0 0; }
+  47%, 100% { background-position: -200% 0, 0 0; }
 }
 .venue__city {
   display: flex;

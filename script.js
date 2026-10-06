@@ -1,7 +1,7 @@
 /* ==========================================================================
    Dilshi & Nuwan — Wedding Invitation
    Vanilla JS. Every feature below degrades gracefully if its CDN library
-   (GSAP/ScrollTrigger, Swiper, GLightbox) fails to load.
+   (GSAP/ScrollTrigger, Swiper) fails to load.
    ========================================================================== */
 (function () {
   "use strict";
@@ -151,70 +151,97 @@
     }
   }
 
+  /* ==================================================================
+   * Full-screen photo viewer, built on Swiper so the photo follows the
+   * finger while swiping (with the next one sliding in beside it),
+   * loops past either end and supports pinch / double-tap zoom.
+   * ================================================================== */
   function initLightbox() {
-    if (typeof GLightbox === "undefined") return; // plain links still open the photos
-    // Built from PHOTOS rather than a DOM selector: Swiper's loop mode
-    // reorders the slides, which would scramble the lightbox order.
-    var lightbox = GLightbox({
-      elements: PHOTOS.map(function (p) {
-        return { href: "images/optimized/" + p.file + ".jpg", type: "image", alt: p.alt };
-      }),
-      touchNavigation: true,
-      loop: true,
-      zoomable: true
+    if (typeof Swiper === "undefined") return; // plain links still open the photos
+    var wrapper = document.getElementById("gallerySwiperWrapper");
+    if (!wrapper) return;
+
+    var n = PHOTOS.length;
+    var icon = function (d) {
+      return '<svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" fill="none" stroke="currentColor" ' +
+             'stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="' + d + '"/></svg>';
+    };
+
+    var viewer = document.createElement("div");
+    viewer.className = "lightbox";
+    viewer.setAttribute("role", "dialog");
+    viewer.setAttribute("aria-modal", "true");
+    viewer.setAttribute("aria-label", "Photo viewer");
+    viewer.setAttribute("aria-hidden", "true");
+    viewer.innerHTML =
+      '<div class="swiper lightbox__swiper"><div class="swiper-wrapper">' +
+        PHOTOS.map(function (p) {
+          return '<div class="swiper-slide"><div class="swiper-zoom-container">' +
+                   '<img src="images/optimized/' + p.file + '.webp" alt="' + p.alt.replace(/"/g, "&quot;") + '" decoding="async">' +
+                 "</div></div>";
+        }).join("") +
+      "</div></div>" +
+      '<p class="lightbox__count caps" aria-live="polite"></p>' +
+      '<button type="button" class="lightbox__btn lightbox__close" aria-label="Close photo viewer">' + icon("M6 6l12 12M18 6L6 18") + "</button>" +
+      '<button type="button" class="lightbox__btn lightbox__nav lightbox__nav--prev" aria-label="Previous photo">' + icon("M15 5l-7 7 7 7") + "</button>" +
+      '<button type="button" class="lightbox__btn lightbox__nav lightbox__nav--next" aria-label="Next photo">' + icon("M9 5l7 7-7 7") + "</button>";
+    document.body.appendChild(viewer);
+
+    var counter = viewer.querySelector(".lightbox__count");
+    var closeBtn = viewer.querySelector(".lightbox__close");
+    var lastFocus = null;
+
+    // set up while invisible (visibility, not display:none) so Swiper can
+    // measure the screen, and the photos are already decoded on first open
+    var viewerSwiper = new Swiper(viewer.querySelector(".lightbox__swiper"), {
+      loop: n > 1,
+      speed: 320,
+      spaceBetween: 20,
+      longSwipesRatio: 0.3, // a slow drag past ~a third of the screen changes photo
+      zoom: { maxRatio: 3 },
+      keyboard: { enabled: false },
+      navigation: {
+        prevEl: viewer.querySelector(".lightbox__nav--prev"),
+        nextEl: viewer.querySelector(".lightbox__nav--next")
+      },
+      on: {
+        slideChange: function (sw) { counter.textContent = (sw.realIndex + 1) + " / " + n; }
+      }
     });
 
-    var wrapper = document.getElementById("gallerySwiperWrapper");
-    if (wrapper) {
-      wrapper.addEventListener("click", function (e) {
-        var a = e.target.closest("a[data-photo]");
-        if (!a) return;
-        e.preventDefault();
-        lightbox.openAt(+a.getAttribute("data-photo"));
-      });
+    function open(i) {
+      lastFocus = document.activeElement;
+      viewerSwiper.update();
+      viewerSwiper.slideToLoop(i, 0);
+      counter.textContent = (i + 1) + " / " + n;
+      viewerSwiper.keyboard.enable();
+      root.classList.add("lightbox-open");
+      viewer.classList.add("is-open");
+      viewer.setAttribute("aria-hidden", "false");
+      closeBtn.focus({ preventScroll: true });
     }
 
-    // GLightbox 3.3.0 ignores `loop` for touch swipes: swiping past the last
-    // (or before the first) photo just bounces back. Its swipe handlers are
-    // rebuilt on every open, so take them over then and turn those two
-    // bounces into normal next/prev moves; every other swipe is untouched.
-    lightbox.on("open", function () {
-      setTimeout(function () {
-        var touch = lightbox.events && lightbox.events.touch;
-        if (!touch || !touch.swipe) return;
-        var multiTouch = false;
-        touch.on("touchStart", function (evt) { if (evt.touches.length === 1) multiTouch = false; });
-        touch.on("multipointStart", function () { multiTouch = true; });
+    function close() {
+      if (!viewer.classList.contains("is-open")) return;
+      viewerSwiper.zoom.out();
+      viewerSwiper.keyboard.disable();
+      root.classList.remove("lightbox-open");
+      viewer.classList.remove("is-open");
+      viewer.setAttribute("aria-hidden", "true");
+      if (lastFocus && lastFocus.focus) lastFocus.focus({ preventScroll: true });
+    }
 
-        var original = touch.swipe.handlers.slice();
-        touch.swipe.handlers = [function (evt) {
-          var last = lightbox.elements.length - 1;
-          var slide = lightbox.activeSlide;
-          var img = slide && slide.querySelector("img");
-          var zoomed = (slide && slide.classList.contains("zoomed")) || (img && img.scaleX > 1);
-          if (last > 0 && !multiTouch && !zoomed) {
-            if (evt.direction === "Left" && lightbox.index === last) return lightbox.nextSlide();
-            if (evt.direction === "Right" && lightbox.index === 0) return lightbox.prevSlide();
-          }
-          for (var i = 0; i < original.length; i++) original[i].apply(this, arguments);
-        }];
-      }, 0);
+    closeBtn.addEventListener("click", close);
+    document.addEventListener("keydown", function (e) {
+      if (e.key === "Escape") close();
     });
 
-    // GLightbox picks the slide animation by comparing indexes, so wrapping
-    // last -> first would slide backwards. Flip the effect for wrap moves.
-    var effects = lightbox.settings.cssEfects;
-    var slideFx = effects.slide, slideBackFx = effects.slideBack;
-    function restoreEffects() { effects.slide = slideFx; effects.slideBack = slideBackFx; }
-    var goToSlide = lightbox.goToSlide;
-    lightbox.goToSlide = function (index) {
-      var n = this.elements.length;
-      if (n > 1 && index >= n) effects.slideBack = slideFx;
-      else if (n > 1 && index < 0) effects.slide = slideBackFx;
-      return goToSlide.apply(this, arguments);
-    };
-    lightbox.on("slide_changed", restoreEffects);
-    lightbox.on("close", restoreEffects);
+    wrapper.addEventListener("click", function (e) {
+      var a = e.target.closest("a[data-photo]");
+      if (!a) return;
+      e.preventDefault();
+      open(+a.getAttribute("data-photo"));
+    });
   }
 
   /* ==================================================================
@@ -341,6 +368,44 @@
         updateAttendingUI();
       });
     });
+
+    /* ---- phone number: group digits as typed (76 123 4567) ---- */
+    // Sri Lankan numbers are grouped the usual way: 76 123 4567,
+    // 076 123 4567 or +94 76 123 4567. Other country codes are left as typed.
+    function groupDigits(d, sizes) {
+      var parts = [], at = 0;
+      for (var i = 0; i < sizes.length && at < d.length; i++) {
+        parts.push(d.slice(at, at + sizes[i]));
+        at += sizes[i];
+      }
+      return parts.join(" ");
+    }
+    function formatPhone(value) {
+      var d = value.replace(/\D/g, "");
+      if (value.trim().charAt(0) === "+") {
+        if (d.length >= 2 && d.slice(0, 2) !== "94") return "+" + value.replace(/[^\d ]/g, "").trim();
+        if (d.length <= 2) return "+" + d;
+        var local = d.slice(2).replace(/^0/, "");
+        return "+94 " + groupDigits(local.slice(0, 9), [2, 3, 4]);
+      }
+      if (d.charAt(0) === "0") return groupDigits(d.slice(0, 10), [3, 3, 4]);
+      return groupDigits(d.slice(0, 9), [2, 3, 4]);
+    }
+    if (phoneInput) {
+      phoneInput.addEventListener("input", function () {
+        var value = phoneInput.value;
+        var formatted = formatPhone(value);
+        if (formatted === value) return;
+        // keep the caret after the same number of digits it was after
+        var digitsBefore = value.slice(0, phoneInput.selectionStart).replace(/\D/g, "").length;
+        phoneInput.value = formatted;
+        var pos = formatted.charAt(0) === "+" ? 1 : 0;
+        for (var seen = 0; pos < formatted.length && seen < digitsBefore; pos++) {
+          if (/\d/.test(formatted.charAt(pos))) seen++;
+        }
+        if (document.activeElement === phoneInput) phoneInput.setSelectionRange(pos, pos);
+      });
+    }
 
     /* ---- message character counter ---- */
     if (messageInput && messageCount) {

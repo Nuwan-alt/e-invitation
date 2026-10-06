@@ -11,7 +11,6 @@ script.js                      guest-name logic, countdown, gallery, calendar, R
 images/                        original source images (untouched)
 images/optimized/              processed assets actually used by the site
 scripts/build_images.py        regenerates everything in images/optimized/
-scripts/fonts/                 Google Font .ttf files used only to render the OG preview image
 google-apps-script/Code.gs     RSVP backend — deploy this into a Google Sheet (see "RSVP setup" below)
 ```
 
@@ -42,11 +41,6 @@ Then open `http://localhost:8000/`.
 2. `netlify deploy` from the project root with the Netlify CLI (publish directory: `.`).
 
 No environment variables, no server, no database — it's static files.
-
-> After deploying, open the live URL and re-check the WhatsApp/Facebook link preview
-> (og:image). Some crawlers resolve relative `og:image` URLs against the page URL fine;
-> if a preview doesn't show, swap the `content="images/optimized/og-preview.jpg"` values
-> in `index.html`'s `<head>` for the full `https://your-domain/...` URL.
 
 ## RSVP setup
 
@@ -157,7 +151,7 @@ it in the script (or just drop a pre-sized `.jpg`/`.webp` pair straight into
 - **Fonts**: Great Vibes (script names), Cinzel (uppercase headings), Cormorant Garamond
   (numerals/body) — loaded from Google Fonts.
 - **Libraries** (all via CDN, pinned versions, loaded with `defer`): GSAP + ScrollTrigger
-  for animation, Swiper for the photo carousel, GLightbox for the fullscreen photo
+  for animation, Swiper for the photo carousel and the fullscreen photo
   viewer. If any of them fail to load (offline CDN, ad-blocker, etc.) the page still
   shows all of its content — animations and the fancy carousel/lightbox interactions
   are progressive enhancements only, never a requirement to see the invitation.
