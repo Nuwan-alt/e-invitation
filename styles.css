@@ -495,18 +495,19 @@ html:not(.js-anim) .divider span { width: 84px; }
     inset: 0;
     background:
       linear-gradient(105deg, transparent 34%, rgba(255, 250, 235, 0.3) 42%, rgba(255, 250, 235, 0.75) 50%,
-        rgba(255, 250, 235, 0.3) 58%, transparent 66%) 250% 0 / 250% 100% no-repeat,
+        rgba(255, 250, 235, 0.3) 58%, transparent 66%) 110% 0 / 250% 100% no-repeat,
       var(--foil);
     -webkit-mask: var(--foil-mask) center / 100% 100% no-repeat;
     mask: var(--foil-mask) center / 100% 100% no-repeat;
-    animation: foil-sheen 10s linear 1.5s infinite;
+    animation: foil-sheen 5s linear 1.5s infinite;
     pointer-events: none;
   }
 }
-/* an unhurried, even glide (about 6s across), then a few seconds' rest */
+/* 2s to cross the artwork at an even pace, then 3s rest. The band starts
+   and ends just past the edges (110% / -10% of its 250%-wide layer). */
 @keyframes foil-sheen {
-  0%        { background-position: 250% 0, 0 0; }
-  60%, 100% { background-position: -150% 0, 0 0; }
+  0%        { background-position: 110% 0, 0 0; }
+  40%, 100% { background-position: -10% 0, 0 0; }
 }
 
 /* ---- parents: side by side under the names ---- */
@@ -1071,16 +1072,17 @@ html.lightbox-open { overflow: hidden; }
   line-height: 1.2;
   /* shared green gradient plus a pale band that sweeps across now and then */
   background:
-    linear-gradient(105deg, transparent 40%, rgba(255, 255, 255, 0.85) 50%, transparent 60%) -200% 0 / 200% 100% no-repeat,
+    linear-gradient(105deg, transparent 40%, rgba(255, 255, 255, 0.85) 50%, transparent 60%) 120% 0 / 200% 100% no-repeat,
     linear-gradient(120deg, var(--green-dark), var(--green-sage) 45%, var(--green-dark) 90%);
   -webkit-background-clip: text;
   background-clip: text;
-  animation: venue-sheen 7.5s linear 1s infinite;
+  animation: venue-sheen 5s linear 1s infinite;
 }
-/* a 3.5s glide at an even pace, then 4s rest before the next one */
+/* 2s to cross the name at an even pace, then 3s rest. The band starts and
+   ends just past the edges (120% / -20% of its 200%-wide layer). */
 @keyframes venue-sheen {
-  0%        { background-position: 200% 0, 0 0; }
-  47%, 100% { background-position: -200% 0, 0 0; }
+  0%        { background-position: 120% 0, 0 0; }
+  40%, 100% { background-position: -20% 0, 0 0; }
 }
 .venue__city {
   display: flex;
