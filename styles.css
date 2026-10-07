@@ -1430,7 +1430,7 @@ html.js-anim .cover__photo-img {
 .music-toggle {
   position: fixed;
   right: calc(16px + env(safe-area-inset-right));
-  bottom: calc(16px + env(safe-area-inset-bottom));
+  bottom: calc(60px + env(safe-area-inset-bottom)); /* clears Netlify's badge in the corner */
   z-index: 900; /* above the page, below the photo viewer */
   display: flex;
   align-items: center;
