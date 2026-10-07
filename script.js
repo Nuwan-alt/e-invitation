@@ -594,6 +594,7 @@
     function openInvitation() {
       if (openBtn.disabled) return;
       openBtn.disabled = true;
+      startMusic(); // must run inside the tap, or the browser blocks playback
 
       if (canAnimate) {
         // lift the cover into a fixed overlay: the invitation moves up
@@ -618,6 +619,45 @@
     } else {
       root.classList.remove("lock-scroll");
     }
+  }
+
+  /* ==================================================================
+   * Background music — started by the "Open Invitation" tap, with a
+   * floating mute toggle. Pauses while the tab is in the background.
+   * ================================================================== */
+  var music = document.getElementById("bgMusic");
+  var musicBtn = document.getElementById("musicToggle");
+  var musicMuted = false;
+
+  function setMusicButton() {
+    musicBtn.classList.toggle("is-muted", musicMuted);
+    musicBtn.setAttribute("aria-pressed", musicMuted ? "true" : "false");
+    musicBtn.setAttribute("aria-label", musicMuted ? "Play music" : "Mute music");
+  }
+
+  function playMusic() {
+    var p = music.play();
+    // blocked or failed to load: show the toggle as muted so a tap retries
+    if (p && p.catch) p.catch(function () { musicMuted = true; setMusicButton(); });
+  }
+
+  function startMusic() {
+    if (!music || !musicBtn) return;
+    musicBtn.hidden = false;
+    setMusicButton();
+    playMusic();
+  }
+
+  if (music && musicBtn) {
+    musicBtn.addEventListener("click", function () {
+      musicMuted = !musicMuted;
+      setMusicButton();
+      if (musicMuted) music.pause(); else playMusic();
+    });
+    document.addEventListener("visibilitychange", function () {
+      if (musicBtn.hidden || musicMuted) return;
+      if (document.hidden) music.pause(); else playMusic();
+    });
   }
 
   /* ==================================================================

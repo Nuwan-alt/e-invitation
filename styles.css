@@ -1425,6 +1425,38 @@ html.js-anim .cover__photo-img {
 }
 
 /* ==========================================================================
+   Background music toggle
+   ========================================================================== */
+.music-toggle {
+  position: fixed;
+  right: calc(16px + env(safe-area-inset-right));
+  bottom: calc(16px + env(safe-area-inset-bottom));
+  z-index: 900; /* above the page, below the photo viewer */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: 50%;
+  background: rgba(47, 69, 56, 0.72);
+  color: #fff;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18);
+  cursor: pointer;
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
+  transition: background-color 0.2s ease, transform 0.2s ease;
+}
+.music-toggle[hidden] { display: none; }
+.music-toggle:hover { background: rgba(47, 69, 56, 0.9); }
+.music-toggle:active { transform: scale(0.94); }
+.music-toggle:focus-visible { outline: 2px solid var(--color-gold); outline-offset: 3px; }
+.music-toggle__off { display: none; }
+.music-toggle.is-muted .music-toggle__on { display: none; }
+.music-toggle.is-muted .music-toggle__off { display: block; }
+
+/* ==========================================================================
    Reduced motion
    ========================================================================== */
 @media (prefers-reduced-motion: reduce) {
