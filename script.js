@@ -14,7 +14,7 @@
    * it's deployed (see README.md for the step-by-step setup).
    * ------------------------------------------------------------------ */
   var RSVP_ENDPOINT = "https://script.google.com/macros/s/AKfycbx67YqxfWGxu1gLwifAo6fSjbVK9gnnX1JDSCvhHv8SF4EyGSXlX4mXrbbLOPIPWHGF/exec";
-  var RSVP_DEADLINE = "1st November 2026"; // e.g. "10th November 2026" — leave empty to hide the line
+  var RSVP_DEADLINE = "10th November 2026"; // e.g. "10th November 2026" — leave empty to hide the line
   var RSVP_STORAGE_KEY = "dn-wedding-rsvp-2026";
 
   /* ------------------------------------------------------------------
